@@ -1,0 +1,98 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>eFootball Tournament Player List</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f172a;
+      color: #fff;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #38bdf8;
+    }
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+    }
+    .table th, .table td {
+      border: 1px solid #334155;
+      padding: 12px;
+      text-align: center;
+    }
+    .table th {
+      background-color: #1e293b;
+      color: #facc15;
+    }
+    .qualified {
+      background-color: #16a34a;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
+    .not-qualified {
+      background-color: #dc2626;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>⚽ eFootball Tournament Player List</h1>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Points</th>
+          <th>Points Left</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="playerTable">
+        <!-- Player rows will be added here by JavaScript -->
+      </tbody>
+    </table>
+  </div>  <script>
+    // 👇 You can edit this list manually
+    const players = [
+      { username: "Sachin", points: 1100 },
+      { username: "Rahul", points: 1500 },
+      { username: "Aman", points: 1340 },
+      { username: "Vikram", points: 500 },
+    ];
+
+    const requiredPoints = 1500;
+
+    const table = document.getElementById("playerTable");
+
+    players.forEach(player => {
+      const row = document.createElement("tr");
+      const pointsLeft = Math.max(0, requiredPoints - player.points);
+      const qualified = player.points >= requiredPoints;
+
+      row.innerHTML = `
+        <td>${player.username}</td>
+        <td>${player.points}</td>
+        <td>${pointsLeft}</td>
+        <td>
+          <span class="${qualified ? 'qualified' : 'not-qualified'}">
+            ${qualified ? '✅ Qualified' : '❌ Not Yet'}
+          </span>
+        </td>
+      `;
+
+      table.appendChild(row);
+    });
+  </script></body>
+</html>

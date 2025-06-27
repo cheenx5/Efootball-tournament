@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Efootball Tournament Players</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #101820;
+      color: #fff;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #00ffcc;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: #1c1c1c;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 12px;
+      border: 1px solid #333;
+      text-align: center;
+    }
+    th {
+      background: #00ffcc;
+      color: #000;
+    }
+    input[type="text"], input[type="number"] {
+      padding: 6px;
+      width: 100%;
+      border-radius: 4px;
+      border: none;
+    }
+    button {
+      padding: 8px 16px;
+      background: #00ffcc;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #00e6b8;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🏆 Efootball Tournament Players List</h1>
+
+  <table id="playersTable">
+    <thead>
+      <tr>
+        <th>Player Name</th>
+        <th>Points</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody">
+    </tbody>
+  </table>
+
+  <h3>Add New Player</h3>
+  <input type="text" id="nameInput" placeholder="Enter player name" />
+  <input type="number" id="pointsInput" placeholder="Enter points" />
+  <button onclick="addPlayer()">Add Player</button>
+
+  <script>
+    function addPlayer() {
+      const name = document.getElementById('nameInput').value.trim();
+      const points = parseInt(document.getElementById('pointsInput').value);
+
+      if (!name || isNaN(points)) {
+        alert('Please enter both name and valid points!');
+        return;
+      }
+
+      const status = points >= 500 ? '✅ Qualified' : '❌ Not Qualified';
+
+      const table = document.getElementById('tableBody');
+      const row = table.insertRow();
+      row.innerHTML = `
+        <td>${name}</td>
+        <td>${points}</td>
+        <td>${status}</td>
+      `;
+
+      document.getElementById('nameInput').value = '';
+      document.getElementById('pointsInput').value = '';
+    }
+  </script>
+
+</body>
+</html>

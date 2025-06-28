@@ -1,0 +1,191 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Efootball Tournament Player List</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 {
+      color: #0077cc;
+    }
+    input, button {
+      padding: 10px;
+      margin: 5px;
+      font-size: 16px;
+      border-radius: 5px;
+    }
+    button {
+      background-color: #0077cc;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    table {
+      width: 100%;
+      max-width: 900px;
+      margin: 30px auto;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 12px;
+      border: 1px solid #ccc;
+    }
+    th {
+      background-color: #0077cc;
+      color: white;
+    }
+    .qualified {
+      color: green;
+      font-weight: bold;
+    }
+    .not-qualified {
+      color: red;
+      font-weight: bold;
+    }
+    #countdown {
+      font-size: 20px;
+      margin-top: 10px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>  <h1>🎮 Efootball Tournament Players</h1>
+  <div id="countdown">Countdown loading...</div>  <input type="text" id="nameInput" placeholder="Enter player name" />
+  <button onclick="addPlayer()">➕ Add Player</button><br><br> <input type="password" id="pinInput" placeholder="Admin PIN to unlock points" /> <button onclick="unlockPoints()">🔓 Unlock Points</button>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Player</th>
+        <th>Points</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>  <script>
+    const adminPIN = "2025";
+    const qualifyPoints = 500;
+    const sheetURL = "https://script.google.com/macros/s/AKfycbw5tO_fR0hkmVd471y5ki8cdh6Yq_pjW_Er0avLvBJ5aFa9OQW4qEQyTarH8vZZKyTXdw/exec";
+    let adminUnlocked = false;
+
+    function addPlayer() {
+      const name = document.getElementById("nameInput").value.trim();
+      if (!name) {
+        alert("Please enter a name");
+        return;
+      }
+
+      const points = 0;
+      const status = "❌ Not Qualified";
+      addRowToTable(name, points, status);
+      sendToSheet(name, points, status);
+      document.getElementById("nameInput").value = "";
+    }
+
+    function addRowToTable(name, points, statusText) {
+      const table = document.getElementById("tableBody");
+      const row = table.insertRow();
+
+      const cellName = row.insertCell();
+      const cellPoints = row.insertCell();
+      const cellStatus = row.insertCell();
+      const cellDelete = row.insertCell();
+
+      cellName.textContent = name;
+
+      const input = document.createElement("input");
+      input.type = "number";
+      input.value = points;
+      input.disabled = !adminUnlocked;
+      input.style.width = "60px";
+      input.oninput = function () {
+        const pts = parseInt(input.value);
+        const status = (pts >= qualifyPoints) ? "✅ Qualified" : "❌ Not Qualified";
+        cellStatus.innerHTML = status;
+        sendToSheet(name, pts, status);
+      };
+      cellPoints.appendChild(input);
+
+      cellStatus.innerHTML = statusText;
+
+      const deleteBtn = document.createElement("button");
+      deleteBtn.textContent = "🗑️";
+      deleteBtn.disabled = !adminUnlocked;
+      deleteBtn.onclick = () => {
+        if (confirm(`Are you sure you want to delete ${name}?`)) {
+          deleteFromSheet(name);
+          row.remove();
+        }
+      };
+      cellDelete.appendChild(deleteBtn);
+    }
+
+    function unlockPoints() {
+      const pin = document.getElementById("pinInput").value;
+      if (pin === adminPIN) {
+        adminUnlocked = true;
+        document.querySelectorAll("#tableBody input[type='number']").forEach(i => i.disabled = false);
+        document.querySelectorAll("#tableBody button").forEach(b => b.disabled = false);
+        alert("Admin access granted ✅");
+      } else {
+        alert("Wrong PIN ❌");
+      }
+    }
+
+    function sendToSheet(name, points, status) {
+      fetch(sheetURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, points, status })
+      }).then(res => res.text()).then(console.log).catch(console.error);
+    }
+
+    function deleteFromSheet(name) {
+      fetch(sheetURL + "?action=delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name })
+      }).then(res => res.text()).then(console.log).catch(console.error);
+    }
+
+    window.onload = function () {
+      fetch(sheetURL)
+        .then(res => res.json())
+        .then(data => {
+          data.forEach(player => {
+            addRowToTable(player.name, player.points, player.status);
+          });
+        })
+        .catch(err => console.error("Failed to load data:", err));
+
+      // Countdown setup
+      const countdownEl = document.getElementById("countdown");
+      const countdownTo = new Date("July 10, 2025 22:00:00").getTime();
+      setInterval(() => {
+        const now = new Date().getTime();
+        const distance = countdownTo - now;
+
+        if (distance < 0) {
+          countdownEl.innerHTML = "🚨 Tournament Deadline Passed!";
+          return;
+        }
+
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        countdownEl.innerHTML = `⏳ Time Left: ${days}d ${hours}h ${minutes}m ${seconds}s`;
+      }, 1000);
+    }
+  </script></body>
+</html>

@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbz6WNCK1_2ZK5zoSf_9s4gLjCGdtunDPPrHq-iyg4hAaQuqOMvQUTKAVAOkFpK7ssrUYA/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbxg59_rbrhoHLjzw359s5sKbRmukLNEp7ab8r7iFU5lIfjUvO2Pqb2K5lTv16pH1p9YMQ/exec";
 
 // Shared functions
 async function fetchPlayers() {

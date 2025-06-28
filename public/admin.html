@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Panel</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Admin Controls</h1>
+    <input type="password" id="adminPin" placeholder="Enter PIN (6756)">
+    <input type="text" id="playerName" placeholder="YT Username">
+    <input type="number" id="playerPoints" placeholder="Points">
+    <button onclick="updatePoints()">Update Points</button>
+    <button onclick="deletePlayer()" class="danger">Delete Player</button>
+    <div id="adminLeaderboard"></div>
+  </div>
+  <script src="scripts.js"></script>
+</body>
+</html>

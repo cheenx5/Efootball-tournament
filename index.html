@@ -2,97 +2,141 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Efootball Tournament Players</title>
+  <title>Efootball Tournament Player List</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #101820;
-      color: #fff;
-      margin: 0;
+      background: #f0f0f0;
       padding: 20px;
+      text-align: center;
     }
     h1 {
-      text-align: center;
-      color: #00ffcc;
+      color: #0077cc;
+    }
+    input, button {
+      padding: 10px;
+      margin: 5px;
+      font-size: 16px;
+      border-radius: 5px;
+    }
+    input[type=\"number\"]:disabled {
+      background: #ddd;
+    }
+    button {
+      background-color: #0077cc;
+      color: white;
+      border: none;
+      cursor: pointer;
     }
     table {
       width: 100%;
+      max-width: 800px;
+      margin: 30px auto;
       border-collapse: collapse;
-      margin-top: 20px;
-      background: #1c1c1c;
+      background: white;
       border-radius: 10px;
       overflow: hidden;
     }
     th, td {
       padding: 12px;
-      border: 1px solid #333;
-      text-align: center;
+      border: 1px solid #ccc;
     }
     th {
-      background: #00ffcc;
-      color: #000;
+      background-color: #0077cc;
+      color: white;
     }
-    input[type="text"], input[type="number"] {
-      padding: 6px;
-      width: 100%;
-      border-radius: 4px;
-      border: none;
+    .status {
+      font-weight: bold;
     }
-    button {
-      padding: 8px 16px;
-      background: #00ffcc;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
+    .qualified {
+      color: green;
     }
-    button:hover {
-      background: #00e6b8;
+    .not-qualified {
+      color: red;
     }
   </style>
 </head>
 <body>
 
-  <h1>🏆 Efootball Tournament Players List</h1>
+  <h1>🎮 Efootball Tournament Players</h1>
 
-  <table id="playersTable">
+  <input type="text" id="nameInput" placeholder="Enter player name" />
+  <input type="password" id="pinInput" placeholder="Admin PIN (to enter points)" />
+  <input type="number" id="pointsInput" placeholder="Points" disabled />
+  <br>
+  <button onclick="unlockPoints()">🔓 Unlock Points</button>
+  <button onclick="addPlayer()">➕ Add Player</button>
+
+  <table>
     <thead>
       <tr>
-        <th>Player Name</th>
-        <th>Points</th>
+        <th>Player</th>
+        <th>Points (Editable)</th>
         <th>Status</th>
       </tr>
     </thead>
-    <tbody id="tableBody">
-    </tbody>
+    <tbody id="tableBody"></tbody>
   </table>
 
-  <h3>Add New Player</h3>
-  <input type="text" id="nameInput" placeholder="Enter player name" />
-  <input type="number" id="pointsInput" placeholder="Enter points" />
-  <button onclick="addPlayer()">Add Player</button>
-
   <script>
+    const adminPIN = "2025"; // Change this as needed
+    const qualifyPoints = 500;
+
+    function unlockPoints() {
+      const enteredPin = document.getElementById('pinInput').value;
+      if (enteredPin === adminPIN) {
+        document.getElementById('pointsInput').disabled = false;
+        alert(\"Points unlocked!\");
+      } else {
+        alert(\"Incorrect PIN\");
+      }
+    }
+
     function addPlayer() {
       const name = document.getElementById('nameInput').value.trim();
-      const points = parseInt(document.getElementById('pointsInput').value);
+      const pointsInput = document.getElementById('pointsInput');
+      const points = pointsInput.disabled ? 0 : parseInt(pointsInput.value);
 
-      if (!name || isNaN(points)) {
-        alert('Please enter both name and valid points!');
+      if (!name) {
+        alert(\"Enter a player name\");
         return;
       }
 
-      const status = points >= 500 ? '✅ Qualified' : '❌ Not Qualified';
-
       const table = document.getElementById('tableBody');
       const row = table.insertRow();
-      row.innerHTML = `
-        <td>${name}</td>
-        <td>${points}</td>
-        <td>${status}</td>
-      `;
 
+      const cellName = row.insertCell();
+      const cellPoints = row.insertCell();
+      const cellStatus = row.insertCell();
+
+      cellName.textContent = name;
+
+      const pointsField = document.createElement('input');
+      pointsField.type = 'number';
+      pointsField.value = isNaN(points) ? 0 : points;
+      pointsField.style.width = \"60px\";
+      pointsField.oninput = function () {
+        updateStatus(pointsField, cellStatus);
+      };
+      cellPoints.appendChild(pointsField);
+
+      updateStatus(pointsField, cellStatus);
+
+      // Clear inputs
       document.getElementById('nameInput').value = '';
+      document.getElementById('pinInput').value = '';
       document.getElementById('pointsInput').value = '';
+      pointsInput.disabled = true;
+    }
+
+    function updateStatus(inputEl, statusCell) {
+      const value = parseInt(inputEl.value);
+      if (!isNaN(value) && value >= qualifyPoints) {
+        statusCell.innerHTML = '<span class=\"status qualified\">✅ Qualified</span>';
+      } else {
+        statusCell.innerHTML = '<span class=\"status not-qualified\">❌ Not Qualified</span>';
+      }
     }
   </script>
 
